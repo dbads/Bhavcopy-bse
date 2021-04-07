@@ -1,12 +1,61 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bhav BSE</title>
+    <title>Filterable table</title>
+    <link rel="stylesheet" href="{% static 'bse/bse.css' %}" />
+    <!-- <link rel="stylesheet" href="{% static 'bse/bse.js' %}" /> -->
   </head>
   <body>
-    {{bhav_data}}
+    <h1 style="text-align: center">Bhavcopy BSE</h1>
+    <div id="app">
+      <table>
+        <thead>
+          <input type="text" placeholder="Filter by department or employee" v-model="filter" />
+          <tr>
+            <th>Department</th>
+            <th>Employees</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(row, index) in filteredRows" :key="`employee-${index}`">
+            <td v-html="highlightMatches(row.department)"></td>
+            <td v-html="highlightMatches([...row.employees].sort().join(', '))"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </body>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        filter: '',
+        rows: {{rows|safe}},
+      },
+      methods: {
+        highlightMatches(text) {
+          const matchExists = text.toLowerCase().includes(this.filter.toLowerCase());
+          if (!matchExists) return text;
+
+          const re = new RegExp(this.filter, 'ig');
+          return text.replace(re, (matchedText) => `<strong>${matchedText}</strong>`);
+        },
+      },
+      computed: {
+        filteredRows() {
+          return this.rows.filter((row) => {
+            const employees = row.employees.toString().toLowerCase();
+            const department = row.department.toLowerCase();
+            const searchTerm = this.filter.toLowerCase();
+            return department.includes(searchTerm) || employees.includes(searchTerm);
+          });
+        },
+      },
+    });
+  </script>
 </html>
