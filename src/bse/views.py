@@ -1,19 +1,24 @@
-from io import BytesIO, StringIO
-from urllib.request import urlopen
+# python builtin modules
+import csv
+import json
+import os.path
+from io import BytesIO
 from zipfile import ZipFile
-from django.shortcuts import render
+from datetime import date, timedelta, datetime
+
+# third party module
 import requests
 import redis
-from bhavcopy import settings
-import json
-# from django.utils import simplejson
-from datetime import date, timedelta, datetime
-import csv
-import os.path
+
+from django.shortcuts import render
 from django.http import JsonResponse
+
+# app modules
+from bhavcopy import settings
 
 
 def get_day_month_year(date):
+  """Return a tuple of day,month,year in required format, adds leading 0 for single digit day and month"""
   day, month, year = date.day, date.month, date.year
   # add leading zero in single digit day and month
   if len(str(day)) == 1:
@@ -66,8 +71,7 @@ def store_bhav_data_in_redis(csv_data, redis_instance):
     }
     value = json.dumps(data)
     key = bhav['SC_NAME']
-    redis_instance.set(key, value)
-    print(redis_instance.get(key), '----value for key', key)
+    redis_instance.set(key.strip(), value)
 
 
 def csv_to_list(csv_path):
@@ -76,12 +80,6 @@ def csv_to_list(csv_path):
     csv_reader = csv.DictReader(csv_file)
     line_count = 0
     for row in csv_reader:
-      if line_count == 0:
-        print(f'Column names are {", ".join(row)}')
-        line_count += 1
-      # print(
-      #     f'\t{row["SC_NAME"]}  {row["OPEN"]}  {row["CLOSE"]}.')
-      # code, name, open, high, low, close
       data = {
           'SC_CODE': row["SC_CODE"],
           'SC_NAME': row["SC_NAME"],
@@ -106,7 +104,6 @@ def bhav_bse(request):
   today = date.today()
   yesterday = today - timedelta(days=1)
   hour = datetime.now().hour
-  # print(datetime.now(), datetime.now().hour, '================')
 
   csv_path_today = get_csv_path(today)
 
@@ -118,13 +115,13 @@ def bhav_bse(request):
     # store new data in redis
     store_bhav_data_in_redis(csv_data, redis_instance)
 
-  # if ajax request on search get the data from redis and return jsonResponse to axios request
-  if request.is_ajax():
-    print('here---ajax')
-    bhav_keys = redis_instance.keys('BIRL')
+  # when search input is changed
+  searchKey = request.GET.get('searchKey', '')
+  if searchKey != '':
+    bhav_keys = redis_instance.keys('*' + searchKey.upper() + '*')
     bhav_data = []
     for key in bhav_keys:
-      data = redis_instance.get(key)
+      data = redis_instance.get(key.decode('utf-8'))
       data = json.loads(data.decode('utf-8'))
       single_data = {
           'SC_CODE': data['SC_CODE'],
@@ -134,6 +131,6 @@ def bhav_bse(request):
           'CLOSE': data['CLOSE'],
       }
       bhav_data.append(single_data)
-    return JsonResponse(bhav_data, status=200)
+    return JsonResponse(json.dumps(bhav_data), status=200, safe=False)
 
   return render(request, template_name, {'bhav_data': []})
