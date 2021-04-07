@@ -7,9 +7,10 @@ import redis
 from bhavcopy import settings
 import json
 # from django.utils import simplejson
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import csv
 import os.path
+from django.http import JsonResponse
 
 
 def get_day_month_year(date):
@@ -53,13 +54,23 @@ def download_bhav_copy(date):
       zfile.extractall('/tmp/bse/')
 
 
-def store_bhav_data_in_redis(csv, redis_instance):
+def store_bhav_data_in_redis(csv_data, redis_instance):
   """Store the bhav data in provided csv to redis"""
+  print('**** storing bhavs in redis ****')
+  for bhav in csv_data:
+    data = {
+        'SC_CODE': bhav["SC_CODE"],
+        'OPEN': bhav["OPEN"],
+        'LOW': bhav["LOW"],
+        'CLOSE': bhav["CLOSE"],
+    }
+    value = json.dumps(data)
+    key = bhav['SC_NAME']
+    redis_instance.set(key, value)
+    print(redis_instance.get(key), '----value for key', key)
 
-  pass
 
-
-def read_csv_in_dict(csv_path):
+def csv_to_list(csv_path):
   csv_data = []
   with open(csv_path, mode='r') as csv_file:
     csv_reader = csv.DictReader(csv_file)
@@ -88,36 +99,41 @@ def read_csv_in_dict(csv_path):
 
 def bhav_bse(request):
   template_name = 'bhav_bse.html'
-
-  # downlaod bhav copy
-  today = date.today()
-  download_bhav_copy(today)
-
-  # read downloaded csv file and store bhav data in redis
-  # Connect to our Redis instance
+  # Connect to redis
   redis_instance = redis.StrictRedis(host=settings.REDIS_HOST,
                                      port=settings.REDIS_PORT, db=0)
 
+  today = date.today()
   yesterday = today - timedelta(days=1)
-  csv_path = get_csv_path(today)
-  csv_path_yesterday = get_csv_path(yesterday)
+  hour = datetime.now().hour
+  # print(datetime.now(), datetime.now().hour, '================')
 
-  # if todays data is not downloaded then send yesterday data
-  if not os.path.exists(csv_path):
-    csv_path = csv_path_yesterday
+  csv_path_today = get_csv_path(today)
 
-  csv_data = read_csv_in_dict(csv_path)
+  # downlaod bhav copy for today if hour >= 18
+  if hour >= 18 and not os.path.exists(csv_path_today):
+    download_bhav_copy(today)
+    csv_path = csv_path_today
+    csv_data = csv_to_list(csv_path)
+    # store new data in redis
+    store_bhav_data_in_redis(csv_data, redis_instance)
 
-  # keys = redis_instance.keys('*')
-  # data = {}
-  # for key in keys:
-  #   print(key, type(key))
-  # value = redis_instance.get(key)
-  # data[key] = value
-  # dic = {'msg': 'I am cool'}
-  # value = json.dumps(dic)
-  # redis_instance.set('deepak', value, '120')
-  # v = redis_instance.get('deepak')
-  # print(v)
-  # print(json.loads(v))
-  return render(request, template_name, {'bhav_data': csv_data})
+  # if ajax request on search get the data from redis and return jsonResponse to axios request
+  if request.is_ajax():
+    print('here---ajax')
+    bhav_keys = redis_instance.keys('BIRL')
+    bhav_data = []
+    for key in bhav_keys:
+      data = redis_instance.get(key)
+      data = json.loads(data.decode('utf-8'))
+      single_data = {
+          'SC_CODE': data['SC_CODE'],
+          'SC_NAME': key.decode('utf-8'),
+          'OPEN': data['OPEN'],
+          'LOW': data['LOW'],
+          'CLOSE': data['CLOSE'],
+      }
+      bhav_data.append(single_data)
+    return JsonResponse(bhav_data, status=200)
+
+  return render(request, template_name, {'bhav_data': []})
