@@ -42,35 +42,37 @@
     crossorigin="anonymous"
   ></script>
   <script>
-
     // axios request
-    function sendRequest(url, method, searchKey) {
+    function sendRequest(url, method, data = {}) {
       return axios({
         method: method,
         url: url,
-        searchKey: searchKey,
+        data: data,
         xsrfCookieName: 'csrftoken',
         xsrfHeaderName: 'X-CSRFToken',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
-        }
-      })
+        },
+      });
     }
 
     const app = new Vue({
       el: '#app',
       data: {
         filter: '',
-        rows: {{bhav_data|safe}},
+        rows: [],
       },
       methods: {
-        fetchBhavs(e){
-          const appThis = this;
+        fetchBhavs(e) {
+          console.log('heree-----', e.target.value);
           const searchKey = e.target.value;
-          sendResponse('localhost:8000/bse/bhav').then(response => {
-            appThis.rows = response;
-          })
-        }
+          var this_vue = this;
+          sendRequest(`http://localhost:8000/bse/bhav/?searchKey=${searchKey}`, 'GET').then(
+            (response) => {
+              this_vue.rows = JSON.parse(response.data);
+            },
+          );
+        },
         highlightMatches(text) {
           const matchExists = text.toLowerCase().includes(this.filter.toLowerCase());
           if (!matchExists) return text;
@@ -81,11 +83,13 @@
       },
       computed: {
         filteredRows() {
-          return this.rows.filter((row) => {
-            const names = row.SC_NAME.toLowerCase();
-            const searchTerm = this.filter.toLowerCase();
-            return names.includes(searchTerm)
-          });
+          if (this.rows.length > 0) {
+            return this.rows.filter((row) => {
+              const names = row.SC_NAME.toLowerCase();
+              const searchTerm = this.filter.toLowerCase();
+              return names.includes(searchTerm);
+            });
+          }
         },
       },
     });
