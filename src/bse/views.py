@@ -96,6 +96,12 @@ def csv_to_list(csv_path):
 
 
 def bhav_bse(request):
+  """
+    This view has following tasks
+    1. download and fetch the zip for today if time >= 6pm and zip is not already fetched
+    2. update the fetched bhav data to redis
+    3. if a Get request contains a searchKey, then search all the matching bhavs from redis and return
+  """
   template_name = 'bhav_bse.html'
   # Connect to redis
   redis_instance = redis.StrictRedis(host=settings.REDIS_HOST,
