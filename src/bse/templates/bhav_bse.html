@@ -13,16 +13,22 @@
     <div id="app">
       <table>
         <thead>
-          <input type="text" placeholder="Filter by department or employee" v-model="filter" />
+          <input type="text" placeholder="Filter by name" v-model="filter" />
           <tr>
-            <th>Department</th>
-            <th>Employees</th>
+            <th>SC_CODE</th>
+            <th>SC_NAME</th>
+            <th>OPEN</th>
+            <th>LOW</th>
+            <th>CLOSE</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, index) in filteredRows" :key="`employee-${index}`">
-            <td v-html="highlightMatches(row.department)"></td>
-            <td v-html="highlightMatches([...row.employees].sort().join(', '))"></td>
+          <tr v-for="(row, index) in filteredRows" :key="`bhav-${index}`">
+            <td v-html="highlightMatches(row.SC_CODE)"></td>
+            <td v-html="highlightMatches(row.SC_NAME)"></td>
+            <td v-html="highlightMatches(row.OPEN)"></td>
+            <td v-html="highlightMatches(row.LOW)"></td>
+            <td v-html="highlightMatches(row.CLOSE)"></td>
           </tr>
         </tbody>
       </table>
@@ -35,7 +41,7 @@
       el: '#app',
       data: {
         filter: '',
-        rows: {{rows|safe}},
+        rows: {{bhav_data|safe}},
       },
       methods: {
         highlightMatches(text) {
@@ -49,10 +55,9 @@
       computed: {
         filteredRows() {
           return this.rows.filter((row) => {
-            const employees = row.employees.toString().toLowerCase();
-            const department = row.department.toLowerCase();
+            const names = row.SC_NAME.toLowerCase();
             const searchTerm = this.filter.toLowerCase();
-            return department.includes(searchTerm) || employees.includes(searchTerm);
+            return names.includes(searchTerm)
           });
         },
       },
