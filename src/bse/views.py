@@ -123,7 +123,7 @@ def bhav_bse(request):
 
   # when search input is changed
   searchKey = request.GET.get('searchKey', '')
-  if searchKey != '':
+  if len(searchKey) >= 2:  # query redis only if there are atleast 2 chars in searchKey
     bhav_keys = redis_instance.keys('*' + searchKey.upper() + '*')
     bhav_data = []
     for key in bhav_keys:

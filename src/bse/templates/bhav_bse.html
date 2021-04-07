@@ -6,14 +6,25 @@
     <meta charset="UTF-8" />
     <title>Filterable table</title>
     <link rel="stylesheet" href="{% static 'bse/bse.css' %}" />
-    <!-- <link rel="stylesheet" href="{% static 'bse/bse.js' %}" /> -->
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    />
   </head>
   <body>
     <h1 style="text-align: center">Bhavcopy BSE</h1>
+
     <div id="app">
+      <button @click="csvExport(filteredRows)">
+        Export to CSV <i class="fas fa-download"></i>
+      </button>
       <table>
         <thead>
-          <input type="text" placeholder="Filter by name" @input="fetchBhavs" v-model="filter" />
+          <tr>
+            <input type="text" placeholder="Filter by name" @input="fetchBhavs" v-model="filter" />
+          </tr>
           <tr>
             <th>SC_CODE</th>
             <th>SC_NAME</th>
@@ -64,14 +75,15 @@
       },
       methods: {
         fetchBhavs(e) {
-          console.log('heree-----', e.target.value);
           const searchKey = e.target.value;
           var this_vue = this;
-          sendRequest(`http://localhost:8000/bse/bhav/?searchKey=${searchKey}`, 'GET').then(
-            (response) => {
-              this_vue.rows = JSON.parse(response.data);
-            },
-          );
+          if (searchKey.length >= 2) {
+            sendRequest(`http://localhost:8000/bse/bhav/?searchKey=${searchKey}`, 'GET').then(
+              (response) => {
+                this_vue.rows = JSON.parse(response.data);
+              },
+            );
+          }
         },
         highlightMatches(text) {
           const matchExists = text.toLowerCase().includes(this.filter.toLowerCase());
@@ -79,6 +91,23 @@
 
           const re = new RegExp(this.filter, 'ig');
           return text.replace(re, (matchedText) => `<strong>${matchedText}</strong>`);
+        },
+        csvExport(arrData) {
+          if (arrData?.length > 1) {
+            let csvContent = 'data:text/csv;charset=utf-8,';
+            csvContent += [
+              Object.keys(arrData[0]).join(','),
+              ...arrData.map((item) => Object.values(item).join(',')),
+            ]
+              .join('\n')
+              .replace(/(^\[)|(\]$)/gm, '');
+
+            const data = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('download', 'export.csv');
+            link.click();
+          }
         },
       },
       computed: {
