@@ -58,6 +58,8 @@ def download_bhav_copy(date):
     with ZipFile(BytesIO(zipresp.content)) as zfile:
       zfile.extractall('csv')
 
+  print('Done downloading!---------')
+
 
 def store_bhav_data_in_redis(csv_data, redis_instance):
   """Store the bhav data in provided csv to redis"""
@@ -124,10 +126,8 @@ def bhav_bse(request):
     csv_data = csv_to_list(csv_path)
     # store new data in redis
     store_bhav_data_in_redis(csv_data, redis_instance)
-
-  # initialize redis with yesterday data, this will run only one in whole life of app
-  print('-----------*******------------', redis_instance.keys('*'))
-  if len(redis_instance.keys('*')) == 0:
+  elif len(redis_instance.keys('*')) == 0:
+    print('downloading for previous day ---')
     download_bhav_copy(yesterday)
     csv_path = get_csv_path(yesterday)
     csv_data = csv_to_list(csv_path)
