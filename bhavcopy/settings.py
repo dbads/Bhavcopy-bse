@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-y(1tgy-^q#rka5&82i7&q%9q293mj(=tch0gg_qf0zpin60hwf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://bhavcopy-bse.herokuapp.com', 'localhost']
+ALLOWED_HOSTS = ['.herokuapp.com', 'localhost']
 
 
 # Application definition
