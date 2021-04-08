@@ -74,6 +74,8 @@ input[type='text'] {
   width: 100%;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
+  font-weight: bold;
+  font-size: 15px;
 }
 
 .exportButton {
