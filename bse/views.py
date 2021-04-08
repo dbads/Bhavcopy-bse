@@ -126,13 +126,6 @@ def bhav_bse(request):
     csv_data = csv_to_list(csv_path)
     # store new data in redis
     store_bhav_data_in_redis(csv_data, redis_instance)
-  elif len(redis_instance.keys('*')) == 0:
-    print('downloading for previous day ---')
-    download_bhav_copy(yesterday)
-    csv_path = get_csv_path(yesterday)
-    csv_data = csv_to_list(csv_path)
-    # store new data in redis
-    store_bhav_data_in_redis(csv_data, redis_instance)
 
   # when search input is changed
   searchKey = request.GET.get('searchKey', '')
