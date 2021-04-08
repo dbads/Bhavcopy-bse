@@ -15,18 +15,6 @@ th {
   background-color: #dddddd;
 }
 
-/* input[type='text'],
-select {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  margin-top: 25px;
-} */
-
 .note {
   color: white;
   position: fixed;
@@ -47,10 +35,11 @@ h2 {
   width: 20%;
   border: 1px solid;
   padding: 10px;
-  box-shadow: 5px 10px 4px 3px #888888;
+  box-shadow: 5px 10px 4px 3px #ccc9b9c9;
   text-align: center;
   border-width: 0px;
-  color: #888888;
+  color: white;
+  background-color: #6495ed;
 }
 
 .input-download-section {
@@ -68,19 +57,23 @@ h2 {
   border-radius: 10px;
 }
 
-.fas {
+.fa-search {
   display: flex;
   max-width: 50%;
   align-items: center;
   justify-content: center;
   padding-left: 5px;
+  background-color: white;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
 
 input[type='text'] {
   display: flex;
-  border-radius: 10px;
   border-width: 0px;
   width: 100%;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 .exportButton {
@@ -111,4 +104,8 @@ button:active {
 
 input:focus {
   outline: none !important;
+}
+
+.eachRow > td {
+  box-shadow: 2px 2px 2px 2px #6495ed;
 }
