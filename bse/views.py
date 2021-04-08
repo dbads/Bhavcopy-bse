@@ -39,7 +39,7 @@ def get_csv_path(date):
   """get csv path for bhav data of date provided"""
   (day, month, year) = get_day_month_year(date)
   csv_name = 'EQ' + day + month + str(year)
-  csv_path = '/tmp/bse/' + csv_name + '.csv'
+  csv_path = 'csv/' + csv_name + '.csv'
 
   return csv_path
 
@@ -56,7 +56,7 @@ def download_bhav_copy(date):
   # download zipfile and extract it into /tmp/bse/
   with requests.get(bhav_url, headers=headers) as zipresp:
     with ZipFile(BytesIO(zipresp.content)) as zfile:
-      zfile.extractall('/tmp/bse/')
+      zfile.extractall('csv')
 
 
 def store_bhav_data_in_redis(csv_data, redis_instance):
