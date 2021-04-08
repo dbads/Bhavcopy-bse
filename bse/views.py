@@ -95,6 +95,11 @@ def csv_to_list(csv_path):
   return csv_data
 
 
+def get_day(date):
+  day_detail = get_day_month_year(date)
+  return day_detail[0] + '-' + day_detail[1] + '-' + day_detail[2]
+
+
 def bhav_bse(request):
   """
     This view has following tasks
@@ -115,6 +120,8 @@ def bhav_bse(request):
   yesterday = today - timedelta(days=1)
   hour = datetime.now().hour
 
+  day = get_day(yesterday)
+
   csv_path_today = get_csv_path(today)
 
   # downlaod bhav copy for today if hour >= 18, else previous bhavs will be shown
@@ -124,6 +131,7 @@ def bhav_bse(request):
     csv_data = csv_to_list(csv_path)
     # store new data in redis
     store_bhav_data_in_redis(csv_data, redis_instance)
+    day = get_day(yesterday)
 
   # when search input is changed
   searchKey = request.GET.get('searchKey', '')
@@ -143,4 +151,4 @@ def bhav_bse(request):
       bhav_data.append(single_data)
     return JsonResponse(json.dumps(bhav_data), status=200, safe=False)
 
-  return render(request, template_name, {'bhav_data': []})
+  return render(request, template_name, {'bhav_data': [], 'day': day})
