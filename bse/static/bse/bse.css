@@ -50,3 +50,21 @@ button:active {
   align-self: right;
   background-color: black;
 }
+
+.header {
+  display: flex;
+  justify-content: space-around;
+}
+
+h2 {
+  display: flex;
+  justify-content: center;
+  border-radius: 20px;
+  width: 20%;
+  border: 1px solid;
+  padding: 10px;
+  box-shadow: 5px 10px 4px 3px #888888;
+  text-align: center;
+  border-width: 0px;
+  color: #888888;
+}
