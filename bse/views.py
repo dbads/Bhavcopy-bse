@@ -39,7 +39,7 @@ def get_csv_path(date):
   """get csv path for bhav data of date provided"""
   (day, month, year) = get_day_month_year(date)
   csv_name = 'EQ' + day + month + str(year)
-  csv_path = 'csv/' + csv_name + '.csv'
+  csv_path = 'csv/' + csv_name + '.CSV'
 
   return csv_path
 
