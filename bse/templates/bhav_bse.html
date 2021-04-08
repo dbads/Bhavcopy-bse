@@ -23,7 +23,12 @@
       <table>
         <thead>
           <tr>
-            <input type="text" placeholder="Filter by name" @input="fetchBhavs" v-model="filter" />
+            <input
+              type="text"
+              placeholder="Filter by company name e.g. birla, ashoka etc"
+              @input="fetchBhavs"
+              v-model="filter"
+            />
           </tr>
           <tr>
             <th>SC_CODE</th>
