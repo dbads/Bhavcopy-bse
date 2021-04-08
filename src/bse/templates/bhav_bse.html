@@ -78,11 +78,18 @@
           const searchKey = e.target.value;
           var this_vue = this;
           if (searchKey.length >= 2) {
-            sendRequest(`http://localhost:8000/bse/bhav/?searchKey=${searchKey}`, 'GET').then(
-              (response) => {
-                this_vue.rows = JSON.parse(response.data);
-              },
-            );
+            const domain = '{{ request.get_host }}';
+            const secure = '{{ request.is_secure }}';
+            let rootUrl;
+            if (secure === 'True') {
+              rootUrl = `https://` + domain;
+            } else {
+              rootUrl = `http://` + domain;
+            }
+
+            sendRequest(`${rootUrl}/bse/bhav/?searchKey=${searchKey}`, 'GET').then((response) => {
+              this_vue.rows = JSON.parse(response.data);
+            });
           }
         },
         highlightMatches(text) {
