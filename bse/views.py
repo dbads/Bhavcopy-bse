@@ -104,7 +104,6 @@ def bhav_bse(request):
   """
   template_name = 'bhav_bse.html'
   # Connect to redis
-  # redis://:p5b1ac14b89b477151716d1ecea3bb6e645a128d3b0ab310021b1b1e28290ac4f@ec2-52-4-141-196.compute-1.amazonaws.com:24399
   redis_url = os.environ.get('REDIS_URL')
   if redis_url:
     redis_instance = redis.from_url(redis_url)
