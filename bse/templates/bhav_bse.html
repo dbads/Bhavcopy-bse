@@ -28,6 +28,7 @@
               placeholder="Filter by company name e.g. birla, ashoka etc"
               @input="fetchBhavs"
               v-model="filter"
+              style="position: -webkit-sticky; position: sticky; top: 0"
             />
           </tr>
           <tr>
@@ -49,6 +50,9 @@
         </tbody>
       </table>
     </div>
+    <small style="color: red; position: fixed; bottom: 0px; align-self: right"
+      >The Bhavs in table are for {{day}}</small
+    >
   </body>
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.js"></script>
