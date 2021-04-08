@@ -117,7 +117,7 @@ def bhav_bse(request):
 
   csv_path_today = get_csv_path(today)
 
-  # downlaod bhav copy for today if hour >= 18
+  # downlaod bhav copy for today if hour >= 18, else previous bhavs will be shown
   if hour >= 18 and not os.path.exists(csv_path_today):
     download_bhav_copy(today)
     csv_path = csv_path_today
