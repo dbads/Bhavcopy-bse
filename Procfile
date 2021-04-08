@@ -1,1 +1,1 @@
-web: gunicorn src/bhavcopy.wsgi --log-file -
+web: gunicorn bhavcopy.wsgi --log-file -
