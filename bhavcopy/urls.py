@@ -18,6 +18,6 @@ from django.urls import path, include
 import bse
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('bse/', include('bse.urls')),
+    path('', include('bse.urls')),
+
 ]
