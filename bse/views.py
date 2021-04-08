@@ -126,6 +126,7 @@ def bhav_bse(request):
     store_bhav_data_in_redis(csv_data, redis_instance)
 
   # initialize redis with yesterday data, this will run only one in whole life of app
+  print('-----------*******------------', redis_instance.keys('*'))
   if len(redis_instance.keys('*')) == 0:
     download_bhav_copy(yesterday)
     csv_path = get_csv_path(yesterday)
