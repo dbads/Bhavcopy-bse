@@ -87,7 +87,7 @@
               rootUrl = `http://` + domain;
             }
 
-            sendRequest(`${rootUrl}/bse/bhav/?searchKey=${searchKey}`, 'GET').then((response) => {
+            sendRequest(`${rootUrl}/?searchKey=${searchKey}`, 'GET').then((response) => {
               this_vue.rows = JSON.parse(response.data);
             });
           }
