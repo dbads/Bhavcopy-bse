@@ -35,11 +35,11 @@
         </thead>
         <tbody>
           <tr v-for="(row, index) in filteredRows" :key="`bhav-${index}`">
-            <td v-html="highlightMatches(row.SC_CODE)"></td>
+            <td v-html="row.SC_CODE"></td>
             <td v-html="highlightMatches(row.SC_NAME)"></td>
-            <td v-html="highlightMatches(row.OPEN)"></td>
-            <td v-html="highlightMatches(row.LOW)"></td>
-            <td v-html="highlightMatches(row.CLOSE)"></td>
+            <td v-html="row.OPEN"></td>
+            <td v-html="row.LOW"></td>
+            <td v-html="row.CLOSE"></td>
           </tr>
         </tbody>
       </table>
