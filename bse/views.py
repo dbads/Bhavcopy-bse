@@ -125,6 +125,14 @@ def bhav_bse(request):
     # store new data in redis
     store_bhav_data_in_redis(csv_data, redis_instance)
 
+  # initialize redis with yesterday data, this will run only one in whole life of app
+  if len(redis_instance.keys('*')) == 0:
+    download_bhav_copy(yesterday)
+    csv_path = get_csv_path(yesterday)
+    csv_data = csv_to_list(csv_path)
+    # store new data in redis
+    store_bhav_data_in_redis(csv_data, redis_instance)
+
   # when search input is changed
   searchKey = request.GET.get('searchKey', '')
   if len(searchKey) >= 2:  # query redis only if there are atleast 2 chars in searchKey
