@@ -118,11 +118,10 @@ def bhav_bse(request):
 
   today = date.today()
   yesterday = today - timedelta(days=1)
-  hour = datetime.now().hour
-
-  day = get_day(yesterday)
+  hour = int(((datetime.utcnow().hour) * 60 + (330)) / 60)
 
   csv_path_today = get_csv_path(today)
+  csv_path_yesterday = get_csv_path(yesterday)
 
   # downlaod bhav copy for today if hour >= 18, else previous bhavs will be shown
   if hour >= 18 and not os.path.exists(csv_path_today):
@@ -131,6 +130,10 @@ def bhav_bse(request):
     csv_data = csv_to_list(csv_path)
     # store new data in redis
     store_bhav_data_in_redis(csv_data, redis_instance)
+
+  if os.path.exists(csv_path_today):
+    day = get_day(today)
+  else:
     day = get_day(yesterday)
 
   # when search input is changed
