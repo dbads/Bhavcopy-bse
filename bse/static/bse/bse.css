@@ -68,3 +68,32 @@ h2 {
   border-width: 0px;
   color: #888888;
 }
+
+.input-download-section {
+  display: flex;
+  justify-content: center;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+}
+
+input[type='text'] {
+  display: flex;
+  flex: 70%;
+}
+
+.exportButton {
+  display: flex;
+  flex: 30%;
+  justify-content: center;
+  margin-top: 25px;
+
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 25px;
+}

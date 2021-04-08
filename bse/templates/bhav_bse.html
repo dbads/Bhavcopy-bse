@@ -19,20 +19,20 @@
     </div>
 
     <div id="app">
-      <button @click="csvExport(filteredRows)">
-        Export to CSV <i class="fas fa-download"></i>
-      </button>
+      <div class="input-download-section">
+        <input
+          type="text"
+          placeholder="Filter by company name e.g. birla, ashoka etc"
+          @input="fetchBhavs"
+          v-model="filter"
+        />
+        <button class="exportButton" @click="csvExport(filteredRows)">
+          Export to CSV <i class="fas fa-download"></i>
+        </button>
+      </div>
+
       <table>
         <thead>
-          <tr>
-            <input
-              type="text"
-              placeholder="Filter by company name e.g. birla, ashoka etc"
-              @input="fetchBhavs"
-              v-model="filter"
-              style="position: -webkit-sticky; position: sticky; top: 0"
-            />
-          </tr>
           <tr>
             <th>SC_CODE</th>
             <th>SC_NAME</th>
