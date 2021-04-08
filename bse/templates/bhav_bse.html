@@ -5,13 +5,13 @@
   <head>
     <meta charset="UTF-8" />
     <title>Bhavcopy BSEe</title>
-    <link rel="stylesheet" href="{% static 'bse/bse.css' %}" />
     <link
       rel="stylesheet"
       href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
       integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="{% static 'bse/bse.css' %}" />
   </head>
   <body>
     <div class="header">
@@ -20,12 +20,15 @@
 
     <div id="app">
       <div class="input-download-section">
-        <input
-          type="text"
-          placeholder="Filter by company name e.g. birla, ashoka etc"
-          @input="fetchBhavs"
-          v-model="filter"
-        />
+        <div class="searchBox">
+          <i class="fas fa-search"></i>
+          <input
+            type="text"
+            placeholder="Filter by company name e.g. birla, ashoka etc"
+            @input="fetchBhavs"
+            v-model="filter"
+          />
+        </div>
         <button class="exportButton" @click="csvExport(filteredRows)">
           Export to CSV <i class="fas fa-download"></i>
         </button>
