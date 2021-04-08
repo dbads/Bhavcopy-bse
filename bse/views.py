@@ -58,8 +58,6 @@ def download_bhav_copy(date):
     with ZipFile(BytesIO(zipresp.content)) as zfile:
       zfile.extractall('csv')
 
-  print('Done downloading!---------')
-
 
 def store_bhav_data_in_redis(csv_data, redis_instance):
   """Store the bhav data in provided csv to redis"""
