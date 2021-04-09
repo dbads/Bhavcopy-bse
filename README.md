@@ -11,10 +11,11 @@
 7. go to `localhost:8000`
 8. there won't be anything in the table initially, you see the data as soon as you type in the search input
 
-Note: I have used [python app setup boilerplate](https://github.com/dbads/python-app-setup) which I created earlier for making setup faster.
-
 
 ### Tech stack
 1. Backend - Python, Django 
 2. UI - HTML, CSS, Vuejs 
 3. Storage - Redis
+
+
+Note: I have used [python app setup boilerplate](https://github.com/dbads/python-app-setup) which I created earlier for making setup faster.
