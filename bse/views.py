@@ -145,7 +145,7 @@ def bhav_bse(request):
 
   # downlaod bhav copy for today if hour >= 18, else previous bhavs will be shown
   weekends = ['Saturday', 'Sunday']
-  if hour >= 1 and dayname not in weekends and not redis_instance.get(str(today)):
+  if hour >= 18 and dayname not in weekends and not redis_instance.get(str(today)):
     download_bhav_copy(today)
     csv_path = csv_path_today
     csv_data = csv_to_list(csv_path)
