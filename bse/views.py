@@ -16,6 +16,8 @@ from django.http import JsonResponse
 # app modules
 from bhavcopy import settings
 
+CSV_DIR = 'csv'
+
 
 def get_day_month_year(date):
   """Return a tuple of day,month,year in required format, adds leading 0 for single digit day and month"""
@@ -39,7 +41,7 @@ def get_csv_path(date):
   """get csv path for bhav data of date provided"""
   (day, month, year) = get_day_month_year(date)
   csv_name = 'EQ' + day + month + str(year)
-  csv_path = 'csv/' + csv_name + '.CSV'
+  csv_path = CSV_DIR + '/' + csv_name + '.CSV'
 
   return csv_path
 
@@ -56,10 +58,10 @@ def download_bhav_copy(date):
   # download zipfile and extract it into /tmp/bse/
   with requests.get(bhav_url, headers=headers) as zipresp:
     with ZipFile(BytesIO(zipresp.content)) as zfile:
-      zfile.extractall('csv')
+      zfile.extractall(CSV_DIR)
 
 
-def store_bhav_data_in_redis(csv_data, redis_instance):
+def store_bhav_data_in_redis(csv_data, redis_instance, date, csv_path):
   """Store the bhav data in provided csv to redis"""
   print('**** storing bhavs in redis ****')
   for bhav in csv_data:
@@ -73,8 +75,16 @@ def store_bhav_data_in_redis(csv_data, redis_instance):
     key = bhav['SC_NAME']
     redis_instance.set(key.strip(), value)
 
+  # set date in redis, so that we know that bhav for today are fetched
+  redis_instance.set(str(date), 'true', 7 * 24 * 60 * 60)  # set date for 7 days
+
+  # remove csv file
+  if os.path.exists(csv_path):
+    os.remove(csv_path)
+
 
 def csv_to_list(csv_path):
+  """This function parses the given csv file and returns the list of Bhav objects(each line of csv)"""
   csv_data = []
   with open(csv_path, mode='r') as csv_file:
     csv_reader = csv.DictReader(csv_file)
@@ -95,7 +105,16 @@ def csv_to_list(csv_path):
   return csv_data
 
 
-def get_day(date):
+def get_day(date, redis_instance, dayname):
+  """Tells the date of the Bhavs shown on the app"""
+
+  # modify date if todays data is not fetched i.e date is not set in redis
+  if not redis_instance.get(str(date)):
+    if dayname == 'Sunday':  # for sunday last open day would be date - 2
+      date = date - timedelta(days=2)
+    else:  # for saturday and other days, if bhave for today is not fethced then showing bhav would be for date - 1
+      date = date - timedelta(days=1)
+
   day_detail = get_day_month_year(date)
   return day_detail[0] + '-' + day_detail[1] + '-' + day_detail[2]
 
@@ -117,6 +136,7 @@ def bhav_bse(request):
                                        port=settings.REDIS_PORT, db=0)
 
   today = date.today()
+  dayname = today.strftime('%A')
   yesterday = today - timedelta(days=1)
   hour = int(((datetime.utcnow().hour) * 60 + (330)) / 60)
 
@@ -124,17 +144,15 @@ def bhav_bse(request):
   csv_path_yesterday = get_csv_path(yesterday)
 
   # downlaod bhav copy for today if hour >= 18, else previous bhavs will be shown
-  if hour >= 18 and not os.path.exists(csv_path_today):
+  weekends = ['Saturday', 'Sunday']
+  if hour >= 1 and dayname not in weekends and not redis_instance.get(str(today)):
     download_bhav_copy(today)
     csv_path = csv_path_today
     csv_data = csv_to_list(csv_path)
     # store new data in redis
-    store_bhav_data_in_redis(csv_data, redis_instance)
+    store_bhav_data_in_redis(csv_data, redis_instance, today, csv_path)
 
-  if os.path.exists(csv_path_today):
-    day = get_day(today)
-  else:
-    day = get_day(yesterday)
+  day = get_day(today, redis_instance, dayname)
 
   # when search input is changed
   searchKey = request.GET.get('searchKey', '')
