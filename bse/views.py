@@ -110,7 +110,9 @@ def get_day(date, redis_instance, dayname):
 
   # modify date if todays data is not fetched i.e date is not set in redis
   if not redis_instance.get(str(date)):
-    if dayname == 'Sunday':  # for sunday last open day would be date - 2
+    if dayname == 'Monday':  # for Monday last open day would be date - 3, Friday
+      date = date - timedelta(days=3)
+    elif dayname == 'Sunday':  # for sunday last open day would be date - 2, Friday
       date = date - timedelta(days=2)
     else:  # for saturday and other days, if bhave for today is not fethced then showing bhav would be for date - 1
       date = date - timedelta(days=1)
